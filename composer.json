@@ -1,0 +1,26 @@
+{
+    "name": "mx13/translatable",
+    "description": "Library managing translations in Laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mohamed Elshazly",
+            "email": "manson@mx13.io"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "MX13\\Translatable\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MX13\\Translatable\\TranslatableServiceProvider"
+            ]
+        }
+    }
+}
