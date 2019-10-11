@@ -20,7 +20,10 @@
         "laravel": {
             "providers": [
                 "MX13\\Translatable\\TranslatableServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Translatable": "MX13\\Translatable\\Facades\\Translatable"
+            }
         }
     }
 }

@@ -6,7 +6,7 @@
  */
 
 return [
-    'locale' => env('APP_LOCALE', 'en'),
+    'default' => 'ar',
     'fallback_local' => 'en',
     'locales' => [
         'ar',

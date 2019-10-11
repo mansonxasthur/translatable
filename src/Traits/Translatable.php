@@ -17,9 +17,17 @@ trait Translatable
      *
      * @return mixed
      */
-    public function translation()
+    public function translations()
     {
-        return $this->hasOne(get_class() . 'Translation');
+        $locales = config('translatable.locales');
+        $fallback_locale = config('translatable.fallback_local');
+        unset($locales[$fallback_locale]);
+        $translations_count = count($locales);
+        if ($translations_count === 1) {
+            return $this->hasOne(get_class() . 'Translation');
+        } else {
+            return $this->hasMany(get_class(), 'Translation');
+        }
     }
 
     /**
@@ -34,7 +42,7 @@ trait Translatable
             if (!in_array($locale, config('translatable.locales')))
                 throw new \Exception('Undefined locale');
         } else {
-            $locale = config('translatable.locale');
+            $locale = config('translatable.default');
         }
 
         $filteredTranslations = [];
@@ -42,33 +50,39 @@ trait Translatable
             if ($value) $filteredTranslations[$key] = $value;
         }
 
-        $this->translation()->create(array_merge(['locale' => $locale], $filteredTranslations));
+        $this->translations()->create(array_merge(['locale' => $locale], $filteredTranslations));
     }
 
     /**
      * @param array $translations
+     * @param string|null $locale
+     *
      * @return void
      * @throws \Exception
      */
-    public function updateTranslation(array $translations): void
+    public function updateTranslation(array $translations, string $locale = null): void
     {
-        if ($this->translation()->first()) {
+        $locale = $locale ?: config('translatable.default');
+        $translation = $this->translations()->where('locale', $locale)->first();
+        if ($translation) {
             $filteredTranslations = [];
             foreach ($translations as $key => $value) {
                 if ($value) $filteredTranslations[$key] = $value;
             }
-            empty($filteredTranslations) ?: $this->translation()->update($filteredTranslations);
+            empty($filteredTranslations) ?: $translation->update($filteredTranslations);
         } else {
             $this->addTranslation($translations);
         }
     }
 
-    protected function getTranslation(string $attribute): string
+    protected function getTranslation(string $attribute): ?string
     {
-        if (App::getLocale() === 'ar')
+        $appLocale = App::getLocale();
+        if ($appLocale !== config('translatable.fallback_local')) {
+            $translation = $this->translations()->where('locale', $appLocale)->first();
+            return $translation ? $translation->{$attribute} : null;
+        }
 
-            return $this->translation->{$attribute} ?: '';
-
-        return $this->attributes[$attribute] ?? '';
+        return $this->attributes[$attribute];
     }
 }

@@ -12,17 +12,27 @@ use Illuminate\Support\ServiceProvider;
 
 class TranslatableServiceProvider extends ServiceProvider
 {
-    const DS = DIRECTORY_SEPARATOR;
-
     /**
+     * Register bindings in the container.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/config/translatable.php', 'translatable'
+        );
+    }
+        /**
      * Bootstrap any application services.
      *
      * @return void
      */
     public function boot()
     {
+        $this->loadRoutesFrom(__DIR__.'/routes/routes.php');
          $this->publishes([
-             __DIR__. self::DS . 'config' . self::DS . 'translatable.php' => config_path('translatable.php'),
-         ]);
+             __DIR__. '/config/translatable.php' => config_path('translatable.php'),
+         ], 'config');
     }
 }
