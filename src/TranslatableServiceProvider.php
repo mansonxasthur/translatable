@@ -30,6 +30,8 @@ class TranslatableServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->app['router']->aliasMiddleware('local', \MX13\Translatable\Http\Middleware\Locale::class);
+
         $this->loadRoutesFrom(__DIR__.'/routes/routes.php');
          $this->publishes([
              __DIR__. '/config/translatable.php' => config_path('translatable.php'),
